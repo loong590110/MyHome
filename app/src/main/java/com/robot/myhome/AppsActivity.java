@@ -1,64 +1,75 @@
 package com.robot.myhome;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.widget.Toast;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import java.util.List;
 
 public class AppsActivity extends BaseActivity
 {
+    private List<ResolveInfo> apps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_apps);
-        registerHomeKeyReceiver();
+        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recycle_view);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        apps = AppUtils.getInstance().getApps(this);
+        recyclerView.setAdapter(adapter);
     }
 
-    @Override
-    protected void onDestroy()
+    private RecyclerView.Adapter adapter = new RecyclerView.Adapter()
     {
-        super.onDestroy();
-        unregisterHomeKeyReceiver();
-    }
-
-    private void registerHomeKeyReceiver()
-    {
-        registerReceiver(mHomeKeyEventReceiver, new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
-    }
-
-    private void unregisterHomeKeyReceiver()
-    {
-        unregisterReceiver(mHomeKeyEventReceiver);
-    }
-
-    private BroadcastReceiver mHomeKeyEventReceiver = new BroadcastReceiver()
-    {
-        String SYSTEM_REASON = "reason";
-        String SYSTEM_HOME_KEY = "homekey";
-        String SYSTEM_HOME_KEY_LONG = "recentapps";
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+        {
+            return new RecyclerView.ViewHolder(getLayoutInflater().inflate(R.layout.item_apps, null)){};
+        }
 
         @Override
-        public void onReceive(Context context, Intent intent)
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            String action = intent.getAction();
-            if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
+            final ResolveInfo resolveInfo = apps.get(position);
+            final ImageView imgIcon = (ImageView) holder.itemView.findViewById(R.id.img_icon);
+            final TextView txtName = (TextView) holder.itemView.findViewById(R.id.txt_name);
+            imgIcon.setImageDrawable(resolveInfo.loadIcon(getPackageManager()));
+            txtName.setText(resolveInfo.loadLabel(getPackageManager()));
+            holder.itemView.setOnClickListener(new View.OnClickListener()
             {
-                String reason = intent.getStringExtra(SYSTEM_REASON);
-                if (TextUtils.equals(reason, SYSTEM_HOME_KEY))
+                @Override
+                public void onClick(View v)
                 {
-                    //表示按了home键,程序到了后台
-                    //Toast.makeText(getApplicationContext(), "home", 1).show();
-                    finish();
-                } else if (TextUtils.equals(reason, SYSTEM_HOME_KEY_LONG))
-                {
-                    //表示长按home键,显示最近使用的程序列表
+                    ComponentName component = new ComponentName(resolveInfo.activityInfo.packageName,
+                            resolveInfo.activityInfo.name);
+                    Intent intent = new Intent();
+                    intent.setComponent(component);
+                    startActivity(intent);
                 }
+            });
+        }
+
+        @Override
+        public int getItemCount()
+        {
+            if(apps != null)
+            {
+                return apps.size();
             }
+            return 0;
         }
     };
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="icon_width">55dp</dimen>
+    <dimen name="icon_width">50dp</dimen>
     <dimen name="icon_search_margin">5dp</dimen>
     <dimen name="icon_search_size">26dp</dimen>
     <dimen name="search_view_height">42dp</dimen>
