@@ -3,6 +3,7 @@ package com.robot.myhome.Utils;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -23,6 +24,7 @@ public class AppUtils
 {
     private static volatile AppUtils instance;
     private List<AppBean> apps;
+    private List<AppBean> dockApps;
     private SoftReference<Bitmap> blurBackground;
 
     private static synchronized void initInstance()
@@ -50,6 +52,7 @@ public class AppUtils
             mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
             List<ResolveInfo> resolveInfos = context.getPackageManager().queryIntentActivities(mainIntent, 0);
             apps = new ArrayList<>();
+            dockApps = new ArrayList<>();
             for (ResolveInfo resolveInfo : resolveInfos)
             {
                 if (resolveInfo != null)
@@ -59,6 +62,33 @@ public class AppUtils
                     appBean.setLabel((String) resolveInfo.loadLabel(context.getPackageManager()));
                     appBean.setPackageName(resolveInfo.activityInfo.packageName);
                     apps.add(appBean);
+                    if (appBean.getLabel().equals("电话") || appBean.getLabel().equals("信息")
+                            || appBean.getLabel().equals("互联网") || appBean.getLabel().equals("相机"))
+                    {
+                        dockApps.add(appBean);
+                    }
+                }
+            }
+        }
+    }
+
+    private synchronized void loadDockApps(Context context)
+    {
+        if (dockApps == null)
+        {
+            Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+            mainIntent.addCategory(Intent.CATEGORY_DESK_DOCK);
+            List<ResolveInfo> resolveInfos = context.getPackageManager().queryIntentActivities(mainIntent, 0);
+            dockApps = new ArrayList<>();
+            for (ResolveInfo resolveInfo : resolveInfos)
+            {
+                if (resolveInfo != null)
+                {
+                    AppBean appBean = new AppBean();
+                    appBean.setIcon(resolveInfo.loadIcon(context.getPackageManager()));
+                    appBean.setLabel((String) resolveInfo.loadLabel(context.getPackageManager()));
+                    appBean.setPackageName(resolveInfo.activityInfo.packageName);
+                    dockApps.add(appBean);
                 }
             }
         }
@@ -73,6 +103,16 @@ public class AppUtils
         return apps;
     }
 
+    public List<AppBean> getDockApps(Context context)
+    {
+        if (dockApps == null)
+        {
+            //loadDockApps(context);
+            loadApps(context);
+        }
+        return dockApps;
+    }
+
     private synchronized void initWallpaper(Context context)
     {
         if (blurBackground == null || blurBackground.get() == null)
@@ -84,8 +124,8 @@ public class AppUtils
             DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
             int screenWidth = displayMetrics.widthPixels;
             int screenHeight = displayMetrics.heightPixels;
-            blurBackground = new SoftReference<>(BlurUtil.blur(context,
-                    Bitmap.createBitmap(bm, 0, 0, screenWidth, screenHeight)));
+            blurBackground = new SoftReference<>(new VisualUtil().fastBlurAuto(Bitmap.createBitmap(bm, 0, 0,
+                    screenWidth, screenHeight), 16));
         }
     }
 
@@ -97,4 +137,5 @@ public class AppUtils
         }
         return blurBackground.get();
     }
+
 }

@@ -5,14 +5,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.robot.myhome.R;
+import com.robot.myhome.Utils.AppUtils;
 import com.robot.myhome.Utils.PermissionRequester;
+import com.robot.myhome.been.AppBean;
+
+import java.util.List;
 
 public class MainActivity extends BaseActivity
 {
     private final int REQUEST_CODE_PERMISSION = 100;
     private PermissionRequester permissionRequester;
+    private List<AppBean> dockApps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -27,6 +33,67 @@ public class MainActivity extends BaseActivity
                 startActivity(new Intent(MainActivity.this, AppsActivity.class));
             }
         });
+        dockApps = AppUtils.getInstance().getDockApps(this);
+        if (dockApps.size() > 0)
+        {
+            ((ImageView)findViewById(R.id.app1)).setImageDrawable(dockApps.get(0).getIcon());
+            findViewById(R.id.app1).setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    startActivity(getPackageManager().getLaunchIntentForPackage(dockApps.get(0).getPackageName()));
+                }
+            });
+        } else
+        {
+            findViewById(R.id.app1).setVisibility(View.INVISIBLE);
+        }
+        if (dockApps.size() > 1)
+        {
+            ((ImageView) findViewById(R.id.app2)).setImageDrawable(dockApps.get(1).getIcon());
+            findViewById(R.id.app2).setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    startActivity(getPackageManager().getLaunchIntentForPackage(dockApps.get(1).getPackageName()));
+                }
+            });
+        } else
+        {
+            findViewById(R.id.app2).setVisibility(View.INVISIBLE);
+        }
+        if (dockApps.size() > 2)
+        {
+            ((ImageView) findViewById(R.id.app4)).setImageDrawable(dockApps.get(2).getIcon());
+            findViewById(R.id.app4).setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    startActivity(getPackageManager().getLaunchIntentForPackage(dockApps.get(2).getPackageName()));
+                }
+            });
+        } else
+        {
+            findViewById(R.id.app4).setVisibility(View.INVISIBLE);
+        }
+        if (dockApps.size() > 3)
+        {
+            ((ImageView) findViewById(R.id.app5)).setImageDrawable(dockApps.get(3).getIcon());
+            findViewById(R.id.app5).setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    startActivity(getPackageManager().getLaunchIntentForPackage(dockApps.get(3).getPackageName()));
+                }
+            });
+        } else
+        {
+            findViewById(R.id.app5).setVisibility(View.INVISIBLE);
+        }
         String[] permissions = PermissionRequester.checkSelfPermissions(this, new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_CONTACTS

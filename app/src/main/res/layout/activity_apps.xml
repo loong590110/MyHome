@@ -16,11 +16,20 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#7F000000"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
     <ImageView
         android:id="@+id/ico_search"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_margin="@dimen/icon_search_margin"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="@dimen/icon_search_margin"
         android:src="@drawable/ic_search_grey_24dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/edit_search"
@@ -37,7 +46,6 @@
         android:textSize="@dimen/search_text_size"
         android:hint="搜索应用..."
         android:textColorHint="@color/grey"
-        android:textColorHighlight="@color/light_grey"
         android:singleLine="true"
         android:maxLength="16"
         android:imeOptions="actionSearch"
@@ -48,6 +56,7 @@
         android:layout_width="0dp"
         android:layout_height="1px"
         android:background="@color/deep_grey"
+        android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_search"/>

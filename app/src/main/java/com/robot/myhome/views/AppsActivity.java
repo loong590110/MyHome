@@ -1,7 +1,5 @@
 package com.robot.myhome.views;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -107,7 +105,7 @@ public class AppsActivity extends BaseActivity
                 View v = popupWindow.getContentView();
                 ((ImageView) v.findViewById(R.id.img_icon)).setImageDrawable(appBean.getIcon());
                 ((TextView) v.findViewById(R.id.txt_name)).setText(appBean.getLabel());
-                ((TextView) v.findViewById(R.id.txt_detail)).setText("pkg name: " + appBean.getPackageName());
+                ((TextView) v.findViewById(R.id.txt_detail)).setText("包名：" + appBean.getPackageName());
                 break;
             }
         }

@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:left="@dimen/icon_search_margin"
-        android:right="@dimen/icon_search_margin">
+        android:right="8dp">
         <inset android:drawable="@drawable/ic_clear_grey_24dp"/>
     </item>
 </layer-list>
