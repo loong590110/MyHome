@@ -1,4 +1,4 @@
-package com.robot.myhome;
+package com.robot.myhome.views;
 
 import android.support.v4.app.FragmentActivity;
 

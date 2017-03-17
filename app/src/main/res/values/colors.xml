@@ -3,4 +3,10 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="color_app_name">@color/light_grey</color>
+    <color name="light_grey">#EEEEEE</color>
+    <color name="deep_grey">#888888</color>
+    <color name="grey">#CCCCCC</color>
+    <color name="white">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
 </resources>

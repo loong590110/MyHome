@@ -2,7 +2,10 @@
 <resources>
     <dimen name="icon_width">50dp</dimen>
     <dimen name="icon_search_margin">5dp</dimen>
-    <dimen name="icon_search_size">26dp</dimen>
+    <dimen name="icon_search_size">24dp</dimen>
     <dimen name="search_view_height">42dp</dimen>
     <dimen name="search_text_size">16sp</dimen>
+    <dimen name="app_name_text_size">14sp</dimen>
+    <dimen name="app_detail_text_size">13sp</dimen>
+    <dimen name="offset_1_dp">1dp</dimen>
 </resources>

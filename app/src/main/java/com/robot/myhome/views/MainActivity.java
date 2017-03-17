@@ -1,10 +1,13 @@
-package com.robot.myhome;
+package com.robot.myhome.views;
 
 import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
+
+import com.robot.myhome.R;
+import com.robot.myhome.Utils.PermissionRequester;
 
 public class MainActivity extends BaseActivity
 {

@@ -4,15 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="5dp">
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/img_icon"
         android:layout_width="@dimen/icon_width"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/icon_width"
         android:scaleType="fitCenter"
         android:src="@mipmap/ic_launcher_round"
-        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
@@ -21,7 +20,14 @@
         android:id="@+id/txt_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textSize="@dimen/app_name_text_size"
+        android:textColor="@color/color_app_name"
         android:text="@string/app_name"
+        android:lines="2"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:gravity="center"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/img_icon"/>
