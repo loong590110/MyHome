@@ -8,13 +8,16 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 
 import com.robot.myhome.been.AppBean;
 
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zailong shi on 2017/3/16 0016.
@@ -22,9 +25,13 @@ import java.util.List;
 
 public class AppUtils
 {
+    public static final String PHONE = "phone";
+    public static final String MSG = "msg";
+    public static final String BROWSER = "browser";
+    public static final String CAMERA = "camera";
     private static volatile AppUtils instance;
     private List<AppBean> apps;
-    private List<AppBean> dockApps;
+    private Map<String, AppBean> dockApps;
     private SoftReference<Bitmap> blurBackground;
 
     private static synchronized void initInstance()
@@ -44,15 +51,15 @@ public class AppUtils
         return instance;
     }
 
-    private synchronized void loadApps(Context context)
+    private synchronized void loadApps(Context context, boolean refresh)
     {
-        if (apps == null)
+        if (apps == null || refresh)
         {
             Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
             mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
             List<ResolveInfo> resolveInfos = context.getPackageManager().queryIntentActivities(mainIntent, 0);
             apps = new ArrayList<>();
-            dockApps = new ArrayList<>();
+            dockApps = new HashMap<>();
             for (ResolveInfo resolveInfo : resolveInfos)
             {
                 if (resolveInfo != null)
@@ -62,10 +69,18 @@ public class AppUtils
                     appBean.setLabel((String) resolveInfo.loadLabel(context.getPackageManager()));
                     appBean.setPackageName(resolveInfo.activityInfo.packageName);
                     apps.add(appBean);
-                    if (appBean.getLabel().equals("电话") || appBean.getLabel().equals("信息")
-                            || appBean.getLabel().equals("互联网") || appBean.getLabel().equals("相机"))
+                    if (appBean.getLabel().equals("电话"))
                     {
-                        dockApps.add(appBean);
+                        dockApps.put(PHONE, appBean);
+                    } else if (appBean.getLabel().equals("信息"))
+                    {
+                        dockApps.put(MSG, appBean);
+                    } else if (appBean.getLabel().equals("互联网"))
+                    {
+                        dockApps.put(BROWSER, appBean);
+                    } else if (appBean.getLabel().equals("相机"))
+                    {
+                        dockApps.put(CAMERA, appBean);
                     }
                 }
             }
@@ -79,7 +94,7 @@ public class AppUtils
             Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
             mainIntent.addCategory(Intent.CATEGORY_DESK_DOCK);
             List<ResolveInfo> resolveInfos = context.getPackageManager().queryIntentActivities(mainIntent, 0);
-            dockApps = new ArrayList<>();
+            dockApps = new HashMap<>();
             for (ResolveInfo resolveInfo : resolveInfos)
             {
                 if (resolveInfo != null)
@@ -88,7 +103,7 @@ public class AppUtils
                     appBean.setIcon(resolveInfo.loadIcon(context.getPackageManager()));
                     appBean.setLabel((String) resolveInfo.loadLabel(context.getPackageManager()));
                     appBean.setPackageName(resolveInfo.activityInfo.packageName);
-                    dockApps.add(appBean);
+                    dockApps.put("", appBean);
                 }
             }
         }
@@ -96,19 +111,29 @@ public class AppUtils
 
     public List<AppBean> getApps(Context context)
     {
-        if (apps == null)
+        return getApps(context, false);
+    }
+
+    public List<AppBean> getApps(Context context, boolean refresh)
+    {
+        if (refresh || apps == null)
         {
-            loadApps(context);
+            loadApps(context, refresh);
         }
         return apps;
     }
 
-    public List<AppBean> getDockApps(Context context)
+    public Map<String, AppBean> getDockApps(Context context)
     {
-        if (dockApps == null)
+        return getDockApps(context, false);
+    }
+
+    public Map<String, AppBean> getDockApps(Context context, boolean refresh)
+    {
+        if (refresh || dockApps == null)
         {
             //loadDockApps(context);
-            loadApps(context);
+            loadApps(context, refresh);
         }
         return dockApps;
     }

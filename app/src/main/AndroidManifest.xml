@@ -16,8 +16,8 @@
         <activity
             android:name=".views.MainActivity"
             android:launchMode="singleTask"
-            android:stateNotNeeded="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:stateNotNeeded="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -29,9 +29,17 @@
         <activity
             android:name=".views.AppsActivity"
             android:launchMode="singleTask"
-            android:stateNotNeeded="true"
-            android:noHistory="true"
-            android:screenOrientation="portrait">
+            android:noHistory="false"
+            android:screenOrientation="portrait"
+            android:stateNotNeeded="true">
         </activity>
+
+        <receiver android:name=".receivers.PackageChangeReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED"/>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <data android:scheme="package"/>
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>

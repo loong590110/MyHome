@@ -1,6 +1,17 @@
 package com.robot.myhome.views;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -8,7 +19,10 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AnimationSet;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -34,10 +48,9 @@ public class AppsActivity extends BaseActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_apps);
-        ((ImageView)findViewById(R.id.background)).setImageBitmap(AppUtils.getInstance().getWallpaper(this));
+        ((ImageView) findViewById(R.id.background)).setImageBitmap(AppUtils.getInstance().getWallpaper(this));
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycle_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-        apps = AppUtils.getInstance().getApps(this);
         recyclerView.setAdapter(adapter);
         editSearch = (EditText) findViewById(R.id.edit_search);
         editSearch.setOnEditorActionListener(new TextView.OnEditorActionListener()
@@ -72,6 +85,68 @@ public class AppsActivity extends BaseActivity
 
             }
         });
+        registerReceiver();
+        final View icApps = findViewById(R.id.ic_apps);
+        icApps.post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                float icoSize = getResources().getDimension(R.dimen.icon_width);
+                float width = getWindow().getDecorView().getWidth();
+                float height = getWindow().getDecorView().getHeight();
+                float endScaleX = width / icoSize;
+                float endScaleY = height / icoSize;
+                float transEndX = - 0;
+                float transEndY = - (height / 2 - icoSize / 2 - getResources().getDimension(R.dimen.dock_padding));
+                ObjectAnimator animatorScaleX = ObjectAnimator.ofFloat(icApps, "scaleX", 1, endScaleX * 1.5f);
+                ObjectAnimator animatorScaleY = ObjectAnimator.ofFloat(icApps, "scaleY", 1, endScaleY * 1.5f);
+                ObjectAnimator animatorX = ObjectAnimator.ofFloat(icApps, "translationX", 0, transEndX);
+                ObjectAnimator animatorY = ObjectAnimator.ofFloat(icApps, "translationY", 0, transEndY);
+
+                AnimatorSet animationSet = new AnimatorSet();
+                animationSet.playTogether(animatorScaleX, animatorScaleY, animatorX, animatorY);
+                animationSet.setDuration(getResources().getInteger(R.integer.duration));
+                animationSet.start();
+                animationSet.addListener(new Animator.AnimatorListener()
+                {
+                    @Override
+                    public void onAnimationStart(Animator animation)
+                    {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation)
+                    {
+                        findViewById(R.id.background).setVisibility(View.VISIBLE);
+                        findViewById(R.id.overlay).setVisibility(View.VISIBLE);
+                        icApps.setVisibility(View.INVISIBLE);
+                        apps = AppUtils.getInstance().getApps(AppsActivity.this);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation)
+                    {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation)
+                    {
+
+                    }
+                });
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        unregisterReceiver();
     }
 
     private void search(String keyword)
@@ -113,7 +188,7 @@ public class AppsActivity extends BaseActivity
 
     private List<AppBean> filterApps(String keyword)
     {
-        if (!TextUtils.isEmpty(keyword))
+        if (!TextUtils.isEmpty(keyword) && apps != null)
         {
             if (subApps == null) subApps = new ArrayList<>();
             else subApps.clear();
@@ -157,12 +232,49 @@ public class AppsActivity extends BaseActivity
                     startActivity(getPackageManager().getLaunchIntentForPackage(appBean.getPackageName()));
                 }
             });
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener()
+            {
+                @Override
+                public boolean onLongClick(View v)
+                {
+                    startActivity(new Intent(Intent.ACTION_UNINSTALL_PACKAGE)
+                            .setData(Uri.parse("package:" + appBean.getPackageName())));
+                    return false;
+                }
+            });
         }
 
         @Override
         public int getItemCount()
         {
-            return (apps = filterApps(editSearch.getText().toString())).size();
+            apps = filterApps(editSearch.getText().toString());
+            if(apps != null)
+            {
+                return apps.size();
+            }
+            return 0;
         }
     };
+
+    private void registerReceiver()
+    {
+        IntentFilter intent = new IntentFilter();
+        intent.addAction(getClass().getName());
+        registerReceiver(packageChangeReceiver, intent);
+    }
+
+    private void unregisterReceiver()
+    {
+        unregisterReceiver(packageChangeReceiver);
+    }
+
+    private BroadcastReceiver packageChangeReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            adapter.notifyDataSetChanged();
+        }
+    };
+
 }

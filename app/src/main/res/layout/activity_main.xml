@@ -11,61 +11,66 @@
         android:id="@+id/dock"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:padding="@dimen/dock_padding"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
+
         <ImageView
             android:id="@+id/app1"
             android:layout_width="@dimen/icon_width"
             android:layout_height="0dp"
-            android:src="@mipmap/ic_launcher_round"
             android:scaleType="fitCenter"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            android:src="@mipmap/ic_launcher_round"
             app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/app2"
-            app:layout_constraintHorizontal_weight="1"/>
+            app:layout_constraintRight_toLeftOf="@+id/app2"/>
+
         <ImageView
             android:id="@+id/app2"
             android:layout_width="@dimen/icon_width"
             android:layout_height="0dp"
-            android:src="@mipmap/ic_launcher_round"
             android:scaleType="fitCenter"
+            android:src="@mipmap/ic_launcher_round"
             app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toRightOf="@id/app1"
-            app:layout_constraintRight_toLeftOf="@+id/app3"
-            app:layout_constraintHorizontal_weight="1"/>
+            app:layout_constraintRight_toLeftOf="@+id/app3"/>
+
         <ImageView
             android:id="@+id/app3"
             android:layout_width="@dimen/icon_width"
             android:layout_height="0dp"
-            android:src="@drawable/ic_allapps"
             android:scaleType="fitCenter"
+            android:src="@drawable/ic_allapps"
             app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toRightOf="@id/app2"
-            app:layout_constraintRight_toLeftOf="@+id/app4"
-            app:layout_constraintHorizontal_weight="1"/>
+            app:layout_constraintRight_toLeftOf="@+id/app4"/>
+
         <ImageView
             android:id="@+id/app4"
             android:layout_width="@dimen/icon_width"
             android:layout_height="0dp"
-            android:src="@mipmap/ic_launcher_round"
             android:scaleType="fitCenter"
+            android:src="@mipmap/ic_launcher_round"
             app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toRightOf="@id/app3"
-            app:layout_constraintRight_toLeftOf="@+id/app5"
-            app:layout_constraintHorizontal_weight="1"/>
+            app:layout_constraintRight_toLeftOf="@+id/app5"/>
+
         <ImageView
             android:id="@+id/app5"
             android:layout_width="@dimen/icon_width"
             android:layout_height="0dp"
-            android:src="@mipmap/ic_launcher_round"
             android:scaleType="fitCenter"
+            android:src="@mipmap/ic_launcher_round"
             app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toRightOf="@id/app4"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintHorizontal_weight="1"/>
+            app:layout_constraintRight_toRightOf="parent"/>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

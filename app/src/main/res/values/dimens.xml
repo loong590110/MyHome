@@ -8,4 +8,5 @@
     <dimen name="app_name_text_size">14sp</dimen>
     <dimen name="app_detail_text_size">13sp</dimen>
     <dimen name="offset_1_dp">1dp</dimen>
+    <dimen name="dock_padding">10dp</dimen>
 </resources>
