@@ -1,20 +1,19 @@
 package com.robot.myhome.views;
 
 import android.Manifest;
-import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.text.Layout;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -22,7 +21,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -31,6 +29,8 @@ import com.robot.myhome.R;
 import com.robot.myhome.Utils.AppUtils;
 import com.robot.myhome.Utils.PermissionRequester;
 import com.robot.myhome.been.AppBean;
+import com.robot.myhome.databinding.ActivityAppsBinding;
+import com.robot.myhome.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,12 +41,14 @@ public class MainActivity extends BaseActivity
     private final int REQUEST_CODE_PERMISSION = 100;
     private PermissionRequester permissionRequester;
     private Map<String, AppBean> dockApps;
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        //setContentView(R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         String[] permissions = PermissionRequester.checkSelfPermissions(this, new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_CONTACTS
@@ -88,7 +90,7 @@ public class MainActivity extends BaseActivity
 
     private void initView(boolean refresh)
     {
-        findViewById(R.id.app3).setOnClickListener(new View.OnClickListener()
+        binding.app3.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -100,7 +102,7 @@ public class MainActivity extends BaseActivity
         dockApps = AppUtils.getInstance().getDockApps(this, refresh);
         if (dockApps.get(AppUtils.PHONE) != null)
         {
-            ((ImageView) findViewById(R.id.app1)).setImageDrawable(dockApps.get(AppUtils.PHONE).getIcon());
+            binding.app1.setImageDrawable(dockApps.get(AppUtils.PHONE).getIcon());
             findViewById(R.id.app1).setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -111,12 +113,12 @@ public class MainActivity extends BaseActivity
             });
         } else
         {
-            findViewById(R.id.app1).setVisibility(View.INVISIBLE);
+            binding.app1.setVisibility(View.INVISIBLE);
         }
         if (dockApps.get(AppUtils.MSG) != null)
         {
-            ((ImageView) findViewById(R.id.app2)).setImageDrawable(dockApps.get(AppUtils.MSG).getIcon());
-            findViewById(R.id.app2).setOnClickListener(new View.OnClickListener()
+            binding.app2.setImageDrawable(dockApps.get(AppUtils.MSG).getIcon());
+            binding.app2.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
@@ -126,12 +128,12 @@ public class MainActivity extends BaseActivity
             });
         } else
         {
-            findViewById(R.id.app2).setVisibility(View.INVISIBLE);
+            binding.app2.setVisibility(View.INVISIBLE);
         }
         if (dockApps.get(AppUtils.BROWSER) != null)
         {
-            ((ImageView) findViewById(R.id.app4)).setImageDrawable(dockApps.get(AppUtils.BROWSER).getIcon());
-            findViewById(R.id.app4).setOnClickListener(new View.OnClickListener()
+            binding.app4.setImageDrawable(dockApps.get(AppUtils.BROWSER).getIcon());
+            binding.app4.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
@@ -141,12 +143,12 @@ public class MainActivity extends BaseActivity
             });
         } else
         {
-            findViewById(R.id.app4).setVisibility(View.INVISIBLE);
+            binding.app4.setVisibility(View.INVISIBLE);
         }
         if (dockApps.get(AppUtils.CAMERA) != null)
         {
-            ((ImageView) findViewById(R.id.app5)).setImageDrawable(dockApps.get(AppUtils.CAMERA).getIcon());
-            findViewById(R.id.app5).setOnClickListener(new View.OnClickListener()
+            binding.app5.setImageDrawable(dockApps.get(AppUtils.CAMERA).getIcon());
+            binding.app5.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
@@ -156,7 +158,7 @@ public class MainActivity extends BaseActivity
             });
         } else
         {
-            findViewById(R.id.app5).setVisibility(View.INVISIBLE);
+            binding.app5.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -176,19 +178,26 @@ public class MainActivity extends BaseActivity
 
     }
 
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        closeAppsView();
+    }
+
     private void registerReceiver()
     {
         IntentFilter intent = new IntentFilter();
         intent.addAction(getClass().getName());
         registerReceiver(packageChangeReceiver, intent);
-        registerReceiver(mHomeKeyEventReceiver, new IntentFilter(
-                Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+//        registerReceiver(mHomeKeyEventReceiver, new IntentFilter(
+//                Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
     }
 
     private void unregisterReceiver()
     {
         unregisterReceiver(packageChangeReceiver);
-        unregisterReceiver(mHomeKeyEventReceiver);
+        //unregisterReceiver(mHomeKeyEventReceiver);
     }
 
     private BroadcastReceiver packageChangeReceiver = new BroadcastReceiver()
@@ -226,8 +235,8 @@ public class MainActivity extends BaseActivity
     /**************** Apps Activity ***************/
     private List<AppBean> apps;
     private List<AppBean> subApps;
-    private EditText editSearch;
     private PopupWindow popupWindow;
+    private ActivityAppsBinding bind;
 
     private void closeAppsView()
     {
@@ -240,29 +249,29 @@ public class MainActivity extends BaseActivity
     private void startAppsView()
     {
         final View v = getLayoutInflater().inflate(R.layout.activity_apps, null);
+        bind = DataBindingUtil.bind(v);
         popupWindow = new PopupWindow(v, ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         popupWindow.setFocusable(true);
         popupWindow.setOutsideTouchable(true);
         popupWindow.showAtLocation(v, 0, 0, 0);
-        ((ImageView) v.findViewById(R.id.background)).setImageBitmap(AppUtils.getInstance().getWallpaper(this));
-        RecyclerView recyclerView = (RecyclerView) v.findViewById(R.id.recycle_view);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-        recyclerView.setAdapter(adapter);
-        editSearch = (EditText) v.findViewById(R.id.edit_search);
-        editSearch.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        bind.background.setImageBitmap(AppUtils.getInstance().getWallpaper(this));
+        bind.recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        apps = AppUtils.getInstance().getApps(MainActivity.this);
+        bind.recyclerView.setAdapter(adapter);
+        bind.editSearch.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
             {
                 if (EditorInfo.IME_ACTION_SEARCH == actionId)
                 {
-                    search(editSearch.getText().toString());
+                    search(bind.editSearch.getText().toString());
                 }
                 return false;
             }
         });
-        editSearch.addTextChangedListener(new TextWatcher()
+        bind.editSearch.addTextChangedListener(new TextWatcher()
         {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after)
@@ -282,8 +291,7 @@ public class MainActivity extends BaseActivity
 
             }
         });
-        final View icApps = v.findViewById(R.id.ic_apps);
-        icApps.post(new Runnable()
+        bind.icApps.post(new Runnable()
         {
             @Override
             public void run()
@@ -295,48 +303,22 @@ public class MainActivity extends BaseActivity
                 float endScaleY = height / icoSize;
                 float transEndX = 0;
                 float transEndY = - (height / 2 - icoSize / 2 - getResources().getDimension(R.dimen.dock_padding));
-                ObjectAnimator animatorScaleX = ObjectAnimator.ofFloat(icApps, "scaleX", 1, endScaleY * 1.5f);
-                ObjectAnimator animatorScaleY = ObjectAnimator.ofFloat(icApps, "scaleY", 1, endScaleY * 1.5f);
-                ObjectAnimator animatorX = ObjectAnimator.ofFloat(icApps, "translationX", 0, transEndX);
-                ObjectAnimator animatorY = ObjectAnimator.ofFloat(icApps, "translationY", 0, transEndY);
-                ObjectAnimator animatorAlpha0 = ObjectAnimator.ofFloat(icApps, "alpha", 1, 0);
-                v.findViewById(R.id.background).setVisibility(View.VISIBLE);
-                v.findViewById(R.id.overlay).setVisibility(View.VISIBLE);
-                ObjectAnimator animatorAlpha1 = ObjectAnimator.ofFloat(v.findViewById(R.id.background), "alpha", 0, 0, 1);
-                ObjectAnimator animatorAlpha2 = ObjectAnimator.ofFloat(v.findViewById(R.id.overlay), "alpha", 0, 0, 1);
+                ObjectAnimator animatorScaleX = ObjectAnimator.ofFloat(bind.icApps, "scaleX", 1, endScaleY * 1.5f);
+                ObjectAnimator animatorScaleY = ObjectAnimator.ofFloat(bind.icApps, "scaleY", 1, endScaleY * 1.5f);
+                ObjectAnimator animatorX = ObjectAnimator.ofFloat(bind.icApps, "translationX", 0, transEndX);
+                ObjectAnimator animatorY = ObjectAnimator.ofFloat(bind.icApps, "translationY", 0, transEndY);
+                ObjectAnimator animatorY2 = ObjectAnimator.ofFloat(bind.recyclerView, "translationY", -transEndY, 0);
+                ObjectAnimator animatorAlpha0 = ObjectAnimator.ofFloat(bind.icApps, "alpha", 1, 0);
+                bind.background.setVisibility(View.VISIBLE);
+                bind.overlay.setVisibility(View.VISIBLE);
+                ObjectAnimator animatorAlpha1 = ObjectAnimator.ofFloat(bind.background, "alpha", 0, 0, 1);
+                ObjectAnimator animatorAlpha2 = ObjectAnimator.ofFloat(bind.overlay, "alpha", 0, 0, 1);
+                ObjectAnimator animatorAlpha3 = ObjectAnimator.ofFloat(bind.recyclerView, "alpha", 0, 0, 1);
                 AnimatorSet animationSet = new AnimatorSet();
                 animationSet.playTogether(animatorScaleX, animatorScaleY, animatorX, animatorY,
-                        animatorAlpha0, animatorAlpha1, animatorAlpha2);
+                        animatorAlpha0, animatorAlpha1, animatorAlpha2, animatorY2, animatorAlpha3);
                 animationSet.setDuration(300);
                 animationSet.start();
-                animationSet.addListener(new Animator.AnimatorListener()
-                {
-                    @Override
-                    public void onAnimationStart(Animator animation)
-                    {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation)
-                    {
-                        icApps.setVisibility(View.INVISIBLE);
-                        apps = AppUtils.getInstance().getApps(MainActivity.this);
-                        adapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation)
-                    {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation)
-                    {
-
-                    }
-                });
             }
         });
     }
@@ -367,7 +349,7 @@ public class MainActivity extends BaseActivity
                 }
                 if (!popupWindow.isShowing())
                 {
-                    popupWindow.showAsDropDown(editSearch, 0, getResources().getDimensionPixelSize(R.dimen.offset_1_dp));
+                    popupWindow.showAsDropDown(bind.editSearch, 0, getResources().getDimensionPixelSize(R.dimen.offset_1_dp));
                 }
                 View v = popupWindow.getContentView();
                 ((ImageView) v.findViewById(R.id.img_icon)).setImageDrawable(appBean.getIcon());
@@ -439,7 +421,7 @@ public class MainActivity extends BaseActivity
         @Override
         public int getItemCount()
         {
-            apps = filterApps(editSearch.getText().toString());
+            apps = filterApps(bind.editSearch.getText().toString());
             if(apps != null)
             {
                 return apps.size();

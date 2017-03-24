@@ -49,7 +49,7 @@ public class AppsActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_apps);
         ((ImageView) findViewById(R.id.background)).setImageBitmap(AppUtils.getInstance().getWallpaper(this));
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycle_view);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
         recyclerView.setAdapter(adapter);
         editSearch = (EditText) findViewById(R.id.edit_search);
