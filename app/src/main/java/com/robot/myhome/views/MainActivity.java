@@ -28,12 +28,12 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.robot.myhome.R;
-import com.robot.myhome.Utils.AppUtils;
-import com.robot.myhome.Utils.PermissionRequester;
 import com.robot.myhome.been.AppBean;
 import com.robot.myhome.databinding.ActivityAppsBinding;
 import com.robot.myhome.databinding.ActivityMainBinding;
 import com.robot.myhome.services.WebService;
+import com.robot.myhome.utils.AppUtil;
+import com.robot.myhome.utils.PermissionRequester;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,61 +102,61 @@ public class MainActivity extends BaseActivity
                 //startAppsView();
             }
         });
-        dockApps = AppUtils.getInstance().getDockApps(this, refresh);
-        if (dockApps.get(AppUtils.PHONE) != null)
+        dockApps = AppUtil.getInstance().getDockApps(this, refresh);
+        if (dockApps.get(AppUtil.PHONE) != null)
         {
-            binding.app1.setImageDrawable(dockApps.get(AppUtils.PHONE).getIcon());
+            binding.app1.setImageDrawable(dockApps.get(AppUtil.PHONE).getIcon());
             findViewById(R.id.app1).setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    startActivity(getPackageManager().getLaunchIntentForPackage(dockApps.get(AppUtils.PHONE).getPackageName()));
+                    startActivity(getPackageManager().getLaunchIntentForPackage(dockApps.get(AppUtil.PHONE).getPackageName()));
                 }
             });
         } else
         {
             binding.app1.setVisibility(View.INVISIBLE);
         }
-        if (dockApps.get(AppUtils.MSG) != null)
+        if (dockApps.get(AppUtil.MSG) != null)
         {
-            binding.app2.setImageDrawable(dockApps.get(AppUtils.MSG).getIcon());
+            binding.app2.setImageDrawable(dockApps.get(AppUtil.MSG).getIcon());
             binding.app2.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    startActivity(getPackageManager().getLaunchIntentForPackage(dockApps.get(AppUtils.MSG).getPackageName()));
+                    startActivity(getPackageManager().getLaunchIntentForPackage(dockApps.get(AppUtil.MSG).getPackageName()));
                 }
             });
         } else
         {
             binding.app2.setVisibility(View.INVISIBLE);
         }
-        if (dockApps.get(AppUtils.BROWSER) != null)
+        if (dockApps.get(AppUtil.BROWSER) != null)
         {
-            binding.app4.setImageDrawable(dockApps.get(AppUtils.BROWSER).getIcon());
+            binding.app4.setImageDrawable(dockApps.get(AppUtil.BROWSER).getIcon());
             binding.app4.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    startActivity(getPackageManager().getLaunchIntentForPackage(dockApps.get(AppUtils.BROWSER).getPackageName()));
+                    startActivity(getPackageManager().getLaunchIntentForPackage(dockApps.get(AppUtil.BROWSER).getPackageName()));
                 }
             });
         } else
         {
             binding.app4.setVisibility(View.INVISIBLE);
         }
-        if (dockApps.get(AppUtils.CAMERA) != null)
+        if (dockApps.get(AppUtil.CAMERA) != null)
         {
-            binding.app5.setImageDrawable(dockApps.get(AppUtils.CAMERA).getIcon());
+            binding.app5.setImageDrawable(dockApps.get(AppUtil.CAMERA).getIcon());
             binding.app5.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    startActivity(getPackageManager().getLaunchIntentForPackage(dockApps.get(AppUtils.CAMERA).getPackageName()));
+                    startActivity(getPackageManager().getLaunchIntentForPackage(dockApps.get(AppUtil.CAMERA).getPackageName()));
                 }
             });
         } else
@@ -264,9 +264,9 @@ public class MainActivity extends BaseActivity
         popupWindow.setFocusable(true);
         popupWindow.setOutsideTouchable(true);
         popupWindow.showAtLocation(v, 0, 0, 0);
-        bind.background.setImageBitmap(AppUtils.getInstance().getWallpaper(this));
+        bind.background.setImageBitmap(AppUtil.getInstance().getWallpaper(this));
         bind.recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-        apps = AppUtils.getInstance().getApps(MainActivity.this);
+        apps = AppUtil.getInstance().getApps(MainActivity.this);
         bind.recyclerView.setAdapter(adapter);
         bind.editSearch.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {

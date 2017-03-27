@@ -1,4 +1,4 @@
-package com.robot.myhome.Utils;
+package com.robot.myhome.utils;
 
 import android.graphics.Bitmap;
 
