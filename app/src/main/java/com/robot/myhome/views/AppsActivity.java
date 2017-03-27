@@ -7,31 +7,28 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AnimationSet;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.robot.myhome.R;
 import com.robot.myhome.Utils.AppUtils;
 import com.robot.myhome.been.AppBean;
+import com.robot.myhome.databinding.ActivityAppsBinding;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,32 +37,32 @@ public class AppsActivity extends BaseActivity
 {
     private List<AppBean> apps;
     private List<AppBean> subApps;
-    private EditText editSearch;
     private PopupWindow popupWindow;
+    private ActivityAppsBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_apps);
-        ((ImageView) findViewById(R.id.background)).setImageBitmap(AppUtils.getInstance().getWallpaper(this));
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-        recyclerView.setAdapter(adapter);
-        editSearch = (EditText) findViewById(R.id.edit_search);
-        editSearch.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_apps);
+        getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        binding.background.setImageBitmap(AppUtils.getInstance().getWallpaper(this));
+        binding.recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        apps = AppUtils.getInstance().getApps(AppsActivity.this);
+        binding.recyclerView.setAdapter(adapter);
+        binding.editSearch.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
             {
                 if (EditorInfo.IME_ACTION_SEARCH == actionId)
                 {
-                    search(editSearch.getText().toString());
+                    search(binding.editSearch.getText().toString());
                 }
                 return false;
             }
         });
-        editSearch.addTextChangedListener(new TextWatcher()
+        binding.editSearch.addTextChangedListener(new TextWatcher()
         {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after)
@@ -77,6 +74,13 @@ public class AppsActivity extends BaseActivity
             public void onTextChanged(CharSequence s, int start, int before, int count)
             {
                 search(String.valueOf(s));
+                if (s.length() > 0)
+                {
+                    binding.btnMore.setVisibility(View.INVISIBLE);
+                } else
+                {
+                    binding.btnMore.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -85,9 +89,31 @@ public class AppsActivity extends BaseActivity
 
             }
         });
-        registerReceiver();
-        final View icApps = findViewById(R.id.ic_apps);
-        icApps.post(new Runnable()
+        binding.btnMore.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                PopupMenu popupMenu = new PopupMenu(AppsActivity.this, v);
+                popupMenu.inflate(R.menu.menu);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
+                {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item)
+                    {
+                        switch (item.getItemId())
+                        {
+                            case R.id.about:
+                                startActivity(new Intent(AppsActivity.this, AboutActivity.class));
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
+            }
+        });
+        binding.icApps.post(new Runnable()
         {
             @Override
             public void run()
@@ -97,49 +123,27 @@ public class AppsActivity extends BaseActivity
                 float height = getWindow().getDecorView().getHeight();
                 float endScaleX = width / icoSize;
                 float endScaleY = height / icoSize;
-                float transEndX = - 0;
-                float transEndY = - (height / 2 - icoSize / 2 - getResources().getDimension(R.dimen.dock_padding));
-                ObjectAnimator animatorScaleX = ObjectAnimator.ofFloat(icApps, "scaleX", 1, endScaleX * 1.5f);
-                ObjectAnimator animatorScaleY = ObjectAnimator.ofFloat(icApps, "scaleY", 1, endScaleY * 1.5f);
-                ObjectAnimator animatorX = ObjectAnimator.ofFloat(icApps, "translationX", 0, transEndX);
-                ObjectAnimator animatorY = ObjectAnimator.ofFloat(icApps, "translationY", 0, transEndY);
-
+                float transEndX = 0;
+                float transEndY = -(height / 2 - icoSize / 2 - getResources().getDimension(R.dimen.dock_padding));
+                ObjectAnimator animatorScaleX = ObjectAnimator.ofFloat(binding.icApps, "scaleX", 1, endScaleY * 1.5f);
+                ObjectAnimator animatorScaleY = ObjectAnimator.ofFloat(binding.icApps, "scaleY", 1, endScaleY * 1.5f);
+                ObjectAnimator animatorX = ObjectAnimator.ofFloat(binding.icApps, "translationX", 0, transEndX);
+                ObjectAnimator animatorY = ObjectAnimator.ofFloat(binding.icApps, "translationY", 0, transEndY);
+                ObjectAnimator animatorY2 = ObjectAnimator.ofFloat(binding.recyclerView, "translationY", -transEndY, 0);
+                ObjectAnimator animatorAlpha0 = ObjectAnimator.ofFloat(binding.icApps, "alpha", 1, 0);
+                binding.background.setVisibility(View.VISIBLE);
+                binding.overlay.setVisibility(View.VISIBLE);
+                ObjectAnimator animatorAlpha1 = ObjectAnimator.ofFloat(binding.background, "alpha", 0, 0, 1);
+                ObjectAnimator animatorAlpha2 = ObjectAnimator.ofFloat(binding.overlay, "alpha", 0, 0, 1);
+                ObjectAnimator animatorAlpha3 = ObjectAnimator.ofFloat(binding.recyclerView, "alpha", 0, 0, 1);
                 AnimatorSet animationSet = new AnimatorSet();
-                animationSet.playTogether(animatorScaleX, animatorScaleY, animatorX, animatorY);
-                animationSet.setDuration(getResources().getInteger(R.integer.duration));
+                animationSet.playTogether(animatorScaleX, animatorScaleY, animatorX, animatorY,
+                        animatorAlpha0, animatorAlpha1, animatorAlpha2, animatorY2, animatorAlpha3);
+                animationSet.setDuration(300);
                 animationSet.start();
-                animationSet.addListener(new Animator.AnimatorListener()
-                {
-                    @Override
-                    public void onAnimationStart(Animator animation)
-                    {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation)
-                    {
-                        findViewById(R.id.background).setVisibility(View.VISIBLE);
-                        findViewById(R.id.overlay).setVisibility(View.VISIBLE);
-                        icApps.setVisibility(View.INVISIBLE);
-                        apps = AppUtils.getInstance().getApps(AppsActivity.this);
-                        adapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation)
-                    {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation)
-                    {
-
-                    }
-                });
             }
         });
+        registerReceiver();
     }
 
     @Override
@@ -175,7 +179,7 @@ public class AppsActivity extends BaseActivity
                 }
                 if (!popupWindow.isShowing())
                 {
-                    popupWindow.showAsDropDown(editSearch, 0, getResources().getDimensionPixelSize(R.dimen.offset_1_dp));
+                    popupWindow.showAsDropDown(binding.editSearch, 0, getResources().getDimensionPixelSize(R.dimen.offset_1_dp));
                 }
                 View v = popupWindow.getContentView();
                 ((ImageView) v.findViewById(R.id.img_icon)).setImageDrawable(appBean.getIcon());
@@ -247,7 +251,7 @@ public class AppsActivity extends BaseActivity
         @Override
         public int getItemCount()
         {
-            apps = filterApps(editSearch.getText().toString());
+            apps = filterApps(binding.editSearch.getText().toString());
             if(apps != null)
             {
                 return apps.size();

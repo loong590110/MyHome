@@ -18,10 +18,12 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -31,6 +33,7 @@ import com.robot.myhome.Utils.PermissionRequester;
 import com.robot.myhome.been.AppBean;
 import com.robot.myhome.databinding.ActivityAppsBinding;
 import com.robot.myhome.databinding.ActivityMainBinding;
+import com.robot.myhome.services.WebService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,8 +98,8 @@ public class MainActivity extends BaseActivity
             @Override
             public void onClick(View v)
             {
-                //startActivity(new Intent(MainActivity.this, AppsActivity.class));
-                startAppsView();
+                startActivity(new Intent(MainActivity.this, AppsActivity.class));
+                //startAppsView();
             }
         });
         dockApps = AppUtils.getInstance().getDockApps(this, refresh);
@@ -190,14 +193,14 @@ public class MainActivity extends BaseActivity
         IntentFilter intent = new IntentFilter();
         intent.addAction(getClass().getName());
         registerReceiver(packageChangeReceiver, intent);
-//        registerReceiver(mHomeKeyEventReceiver, new IntentFilter(
-//                Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
+        registerReceiver(mHomeKeyEventReceiver, new IntentFilter(
+                Intent.ACTION_CLOSE_SYSTEM_DIALOGS));
     }
 
     private void unregisterReceiver()
     {
         unregisterReceiver(packageChangeReceiver);
-        //unregisterReceiver(mHomeKeyEventReceiver);
+        unregisterReceiver(mHomeKeyEventReceiver);
     }
 
     private BroadcastReceiver packageChangeReceiver = new BroadcastReceiver()
@@ -210,25 +213,31 @@ public class MainActivity extends BaseActivity
         }
     };
 
-    private BroadcastReceiver mHomeKeyEventReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver mHomeKeyEventReceiver = new BroadcastReceiver()
+    {
         String SYSTEM_REASON = "reason";
         String SYSTEM_HOME_KEY = "homekey";
         String SYSTEM_SWITCH_KEY = "recentapps";
 
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent)
+        {
             String action = intent.getAction();
-            if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
+            if (action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
+            {
                 String reason = intent.getStringExtra(SYSTEM_REASON);
                 Log.i("@zls", "key=" + reason);
-                if (TextUtils.equals(reason, SYSTEM_HOME_KEY)) {
+                if (TextUtils.equals(reason, SYSTEM_HOME_KEY))
+                {
                     //表示按了home键,程序到了后台
                     closeAppsView();
-                }else if(TextUtils.equals(reason, SYSTEM_SWITCH_KEY)){
+                } else if (TextUtils.equals(reason, SYSTEM_SWITCH_KEY))
+                {
                     //表示长按home键,显示最近使用的程序列表
                     closeAppsView();
                 }
             }
+            WebService.getInstance().start(context);
         }
     };
 
@@ -240,7 +249,7 @@ public class MainActivity extends BaseActivity
 
     private void closeAppsView()
     {
-        if(popupWindow != null)
+        if (popupWindow != null)
         {
             popupWindow.dismiss();
         }
@@ -283,12 +292,43 @@ public class MainActivity extends BaseActivity
             public void onTextChanged(CharSequence s, int start, int before, int count)
             {
                 search(String.valueOf(s));
+                if (s.length() > 0)
+                {
+                    bind.btnMore.setVisibility(View.INVISIBLE);
+                } else
+                {
+                    bind.btnMore.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
             public void afterTextChanged(Editable s)
             {
 
+            }
+        });
+        bind.btnMore.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                PopupMenu popupMenu = new PopupMenu(MainActivity.this, v);
+                getMenuInflater().inflate(R.menu.menu, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
+                {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item)
+                    {
+                        switch (item.getItemId())
+                        {
+                            case R.id.about:
+                                startActivity(new Intent(MainActivity.this, AboutActivity.class));
+                                break;
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
             }
         });
         bind.icApps.post(new Runnable()
@@ -302,7 +342,7 @@ public class MainActivity extends BaseActivity
                 float endScaleX = width / icoSize;
                 float endScaleY = height / icoSize;
                 float transEndX = 0;
-                float transEndY = - (height / 2 - icoSize / 2 - getResources().getDimension(R.dimen.dock_padding));
+                float transEndY = -(height / 2 - icoSize / 2 - getResources().getDimension(R.dimen.dock_padding));
                 ObjectAnimator animatorScaleX = ObjectAnimator.ofFloat(bind.icApps, "scaleX", 1, endScaleY * 1.5f);
                 ObjectAnimator animatorScaleY = ObjectAnimator.ofFloat(bind.icApps, "scaleY", 1, endScaleY * 1.5f);
                 ObjectAnimator animatorX = ObjectAnimator.ofFloat(bind.icApps, "translationX", 0, transEndX);
@@ -422,7 +462,7 @@ public class MainActivity extends BaseActivity
         public int getItemCount()
         {
             apps = filterApps(bind.editSearch.getText().toString());
-            if(apps != null)
+            if (apps != null)
             {
                 return apps.size();
             }
