@@ -114,7 +114,7 @@ public class WebService
             String token = params.get("token");
             if("L6A2F2H0FDH23AKLX8IAEE9RBSH8FG5J".equals(token))
             {
-                response.setHeader("Access-Control-Allow-Origin", "http://192.168.1.113:8080");
+                response.setHeader("Access-Control-Allow-Origin", "http://code.csdn.net:80");
                 response.setEntity(new StringEntity("<a href=\"http://localhost:8080/open?pkg=com.robot.myhome\">open</a>"));
             }
         }
@@ -136,7 +136,7 @@ public class WebService
             String pkg = params.get("pkg");
             if("com.robot.myhome".equals(pkg))
             {
-                response.setHeader("Access-Control-Allow-Origin", "http://192.168.1.113:8080");
+                response.setHeader("Access-Control-Allow-Origin", "http://192.168.1.116:8080");
                 response.setEntity(new StringEntity("done"));
                 this.context.startActivity(new Intent(this.context, AppsActivity.class));
             }
