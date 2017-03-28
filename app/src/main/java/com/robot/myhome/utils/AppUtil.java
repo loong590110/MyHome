@@ -1,14 +1,12 @@
-package com.robot.myhome.Utils;
+package com.robot.myhome.utils;
 
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 
 import com.robot.myhome.been.AppBean;
@@ -23,13 +21,13 @@ import java.util.Map;
  * Created by zailong shi on 2017/3/16 0016.
  */
 
-public class AppUtils
+public class AppUtil
 {
     public static final String PHONE = "phone";
     public static final String MSG = "msg";
     public static final String BROWSER = "browser";
     public static final String CAMERA = "camera";
-    private static volatile AppUtils instance;
+    private static volatile AppUtil instance;
     private List<AppBean> apps;
     private Map<String, AppBean> dockApps;
     private SoftReference<Bitmap> blurBackground;
@@ -38,11 +36,11 @@ public class AppUtils
     {
         if (instance == null)
         {
-            instance = new AppUtils();
+            instance = new AppUtil();
         }
     }
 
-    public static AppUtils getInstance()
+    public static AppUtil getInstance()
     {
         if (instance == null)
         {

@@ -1,6 +1,5 @@
 package com.robot.myhome.views;
 
-import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
@@ -26,7 +25,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.robot.myhome.R;
-import com.robot.myhome.Utils.AppUtils;
+import com.robot.myhome.utils.AppUtil;
 import com.robot.myhome.been.AppBean;
 import com.robot.myhome.databinding.ActivityAppsBinding;
 
@@ -46,9 +45,9 @@ public class AppsActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_apps);
         getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        binding.background.setImageBitmap(AppUtils.getInstance().getWallpaper(this));
+        binding.background.setImageBitmap(AppUtil.getInstance().getWallpaper(this));
         binding.recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
-        apps = AppUtils.getInstance().getApps(AppsActivity.this);
+        apps = AppUtil.getInstance().getApps(AppsActivity.this);
         binding.recyclerView.setAdapter(adapter);
         binding.editSearch.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
