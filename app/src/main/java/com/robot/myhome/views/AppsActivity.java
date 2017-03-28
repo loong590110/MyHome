@@ -25,9 +25,9 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.robot.myhome.R;
-import com.robot.myhome.utils.AppUtil;
 import com.robot.myhome.been.AppBean;
 import com.robot.myhome.databinding.ActivityAppsBinding;
+import com.robot.myhome.utils.AppUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -251,7 +251,7 @@ public class AppsActivity extends BaseActivity
         public int getItemCount()
         {
             apps = filterApps(binding.editSearch.getText().toString());
-            if(apps != null)
+            if (apps != null)
             {
                 return apps.size();
             }
