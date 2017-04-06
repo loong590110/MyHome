@@ -33,7 +33,7 @@ import com.robot.myhome.utils.PermissionRequester;
 import com.robot.myhome.been.AppBean;
 import com.robot.myhome.databinding.ActivityAppsBinding;
 import com.robot.myhome.databinding.ActivityMainBinding;
-import com.robot.myhome.services.WebService;
+import com.robot.myhome.services.WebServices;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -237,7 +237,7 @@ public class MainActivity extends BaseActivity
                     closeAppsView();
                 }
             }
-            WebService.getInstance().start(context);
+            WebServices.getInstance().start(context);
         }
     };
 

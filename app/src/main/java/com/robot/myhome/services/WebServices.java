@@ -1,12 +1,10 @@
 package com.robot.myhome.services;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
 import com.robot.myhome.views.AppsActivity;
-import com.robot.myhome.views.MainActivity;
 import com.yanzhenjie.andserver.AndServer;
 import com.yanzhenjie.andserver.RequestHandler;
 import com.yanzhenjie.andserver.Server;
@@ -20,28 +18,37 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
+import retrofit2.http.GET;
 
 /**
  * Created by zailong shi on 2017/3/27 0027.
  */
 
-public class WebService
+public final class WebServices
 {
-    private static final String TAG = WebService.class.getName();
-    private static WebService instance;
+    private static final String TAG = WebServices.class.getName();
+    private static WebServices instance;
     private Server server;
     private Object lock = new Object();
+    private Services services;
 
     private synchronized static void initInstance()
     {
         if (instance == null)
         {
-            instance = new WebService();
+            instance = new WebServices();
         }
     }
 
-    public static WebService getInstance()
+    public static WebServices getInstance()
     {
         if (instance == null)
         {
@@ -112,7 +119,7 @@ public class WebService
         {
             Map<String, String> params = HttpRequestParser.parse(request);
             String token = params.get("token");
-            if("L6A2F2H0FDH23AKLX8IAEE9RBSH8FG5J".equals(token))
+            if ("L6A2F2H0FDH23AKLX8IAEE9RBSH8FG5J".equals(token))
             {
                 response.setHeader("Access-Control-Allow-Origin", "http://code.csdn.net:80");
                 response.setEntity(new StringEntity("<a href=\"http://localhost:8080/open?pkg=com.robot.myhome\">open</a>"));
@@ -134,7 +141,7 @@ public class WebService
         {
             Map<String, String> params = HttpRequestParser.parse(request);
             String pkg = params.get("pkg");
-            if("com.robot.myhome".equals(pkg))
+            if ("com.robot.myhome".equals(pkg))
             {
                 response.setHeader("Access-Control-Allow-Origin", "http://192.168.1.116:8080");
                 response.setEntity(new StringEntity("done"));
@@ -143,4 +150,47 @@ public class WebService
         }
     }
 
+    /**
+     * Web Services
+     */
+    private synchronized void initServices()
+    {
+        if (services == null)
+        {
+            services = new Retrofit.Builder()
+                    .baseUrl("http://code.csdn.net/snippets/u1P4y9m0M6D072y6p8B0/master/")
+                    .addConverterFactory(ScalarsConverterFactory.create())
+                    .build()
+                    .create(Services.class);
+        }
+    }
+
+    private void initServicesShell()
+    {
+        if (services == null)
+        {
+            initServices();
+        }
+    }
+
+    private interface Services
+    {
+        @GET("about.html/raw")
+        Call<String> getAbout();
+    }
+
+    public void getAbout(Callback<String> callback)
+    {
+        delegate("about", String.class).enqueue(callback);
+    }
+
+    private <T> Call<T> delegate (String name, Class<T> c)
+    {
+        initServicesShell();
+        if("about".equals(name))
+        {
+            return (Call<T>) services.getAbout();
+        }
+        return null;
+    }
 }
