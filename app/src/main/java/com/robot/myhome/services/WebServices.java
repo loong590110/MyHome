@@ -165,12 +165,13 @@ public final class WebServices
         }
     }
 
-    private void initServicesShell()
+    private Services servicesShell()
     {
         if (services == null)
         {
             initServices();
         }
+        return services;
     }
 
     private interface Services
@@ -181,16 +182,7 @@ public final class WebServices
 
     public void getAbout(Callback<String> callback)
     {
-        delegate("about", String.class).enqueue(callback);
+        servicesShell().getAbout().enqueue(callback);
     }
 
-    private <T> Call<T> delegate (String name, Class<T> c)
-    {
-        initServicesShell();
-        if("about".equals(name))
-        {
-            return (Call<T>) services.getAbout();
-        }
-        return null;
-    }
 }

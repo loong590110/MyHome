@@ -110,6 +110,7 @@ public class AppsActivity extends BaseActivity
                     }
                 });
                 popupMenu.show();
+
             }
         });
         binding.icApps.post(new Runnable()

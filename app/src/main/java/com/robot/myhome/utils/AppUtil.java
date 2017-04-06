@@ -70,10 +70,12 @@ public class AppUtil
                     if (appBean.getLabel().equals("电话"))
                     {
                         dockApps.put(PHONE, appBean);
-                    } else if (appBean.getLabel().equals("信息"))
+                    } else if (appBean.getLabel().equals("信息")
+                            || appBean.getLabel().equals("信息功能"))
                     {
                         dockApps.put(MSG, appBean);
-                    } else if (appBean.getLabel().equals("互联网"))
+                    } else if (appBean.getLabel().equals("互联网")
+                            || appBean.getLabel().equals("浏览器"))
                     {
                         dockApps.put(BROWSER, appBean);
                     } else if (appBean.getLabel().equals("相机"))

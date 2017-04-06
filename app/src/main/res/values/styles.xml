@@ -11,7 +11,7 @@
         <item name="android:fitsSystemWindows">true</item>
     </style>
 
-    <style name="DialogTheme" parent="android:Theme.Holo.Dialog.NoActionBar">
+    <style name="DialogTheme" parent="Animation.AppCompat.Dialog">
         <item name="windowActionBar">false</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowFrame">@null</item>
